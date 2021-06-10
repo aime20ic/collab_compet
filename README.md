@@ -31,21 +31,21 @@ To set up your python environment to run the code in this repository, follow the
    - __Linux__ or __Mac__:
   
     ```bash
-    conda create --name collab-compet python=3.6
-    source activate collab-compet
+    conda create --name collab_compet python=3.6
+    source activate collab_compet
     ```
 
    - __Windows__:
 
     ```bash
-    conda create --name collab-compet python=3.6 
-    activate collab-compet
+    conda create --name collab_compet python=3.6 
+    activate collab_compet
     ```
 
 2. Clone Navigation repository
 
     ```bash
-    git clone git@github.com:aime20ic/collab-compet.git
+    git clone git@github.com:aime20ic/collab_compet.git
     ```
 
 3. Install [dependencies](#dependencies)
@@ -67,7 +67,7 @@ To install required dependencies to execute code in the repository, follow the i
 2. Install required packages using `pip` from main repository directory
 
     ```bash
-    cd collab-compet
+    cd collab_compet
     pip install .
     ```
 
