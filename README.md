@@ -1,7 +1,7 @@
 [//]: # (Image References)
 
 [image1]: https://user-images.githubusercontent.com/10624937/42135623-e770e354-7d12-11e8-998d-29fc74429ca2.gif "Trained Agent"
-[image2]: https://user-images.githubusercontent.com/10624937/42135622-e55fb586-7d12-11e8-8a54-3c31da15a90a.gif "Soccer"
+[image2]: ./images/agent_performance.png "MADDPG Agent Performance"
 
 # Project 3: Collaboration and Competition
 
@@ -87,10 +87,66 @@ To install required dependencies to execute code in the repository, follow the i
 
 ## Instructions
 
-### Training an Agent
+The `run_agent.py` script can be used to train or evaluate an agent. Logs of agent parameters, agent performance (as shown below), and environment evaluation settings are saved during script execution. Some agent and associated model hyperparameters are configurable via command line arguments. See [help](#help) section for more details about available parameters.
+
+![MADDPG Agent Performance][image2]
+
+Training an agent only requires specifying the path to the [downloaded Unity simulation environment](#getting-started)
+
+```bash
+python -m collab_compet.run_agent --sim Tennis_Windows_x86_64/Tennis.exe
+```
+
+Model training parameters are configurable via command line. Certain variables such as env name are used for
+logging of agent parameters and environment performance results.
+
+```bash
+python -m collab_compet.run_agent --sim Tennis_Windows_x86_64/Tennis.exe --n-episodes 1000 --seed 5
+```
 
 ### Continuing Training
 
+To continue training using a previously trained model, specify the path to the previously saved model using the `--actor` and `--critic` command line arguments.
+
+**NOTE:** Saved model hidden layer sizes must match sizes specified in `model.py`. 
+
+```bash
+python -m collab_compet.run_agent --sim Tennis_Windows_x86_64/Tennis.exe --actor example_models/actor1.pth example_models/actor2.pth --critic example_models/critic1.pth example_models/critic2.pth
+```
+
 ### Evaluating a Trained Agent
 
+Evaluating a trained agent requires using the `--actor` and `--critic` command line arguments as well as `--test` argument simultaneously. The number of evaluation episodes is specified using `--n-episodes` argument, while `--max-t` argument specifies the number of maximum simulation time steps per episode. 
+
+```bash
+python -m collab_compet.run_agent Tennis_Windows_x86_64/Tennis.exe --actor example_models/actor1.pth example_models/actor2.pth --critic example_models/critic1.pth example_models/critic2.pth --n-episodes 100 --test --seed 15
+```
+
 ### Help
+
+For a full list of available command line parameters try
+
+```bash
+$ python -m collab_compet.run_agent --help
+usage: run_agent.py [-h] [--actor [ACTOR [ACTOR ...]]]
+                    [--critic [CRITIC [CRITIC ...]]] [--n-episodes N_EPISODES]
+                    [--output OUTPUT] [--run-id RUN_ID] [--sim SIM] [--test]
+                    [--window WINDOW] [--seed SEED]
+
+Agent hyperparameters
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --actor [ACTOR [ACTOR ...]]
+                        Path to actor models to load
+  --critic [CRITIC [CRITIC ...]]
+                        Path to critic models to load
+  --n-episodes N_EPISODES
+                        Maximum number of training episodes
+  --output OUTPUT       Directory to save models, logs, & other output
+  --run-id RUN_ID       Execution run identifier
+  --sim SIM             Path to Unity Tennis simulation
+  --test                Test mode, no agent training
+  --window WINDOW       Window size to use for terminal condition check
+  --seed SEED           Seed for repeatability
+```
