@@ -150,6 +150,7 @@ class DDPG():
 
         Args:
             path (Path): Saved model weights to load
+            aorc (str): Actor or critic
 
         Returns:
             None
