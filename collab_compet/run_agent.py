@@ -1,6 +1,5 @@
 import json
 import time
-import torch
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -158,6 +157,10 @@ def eval_agent(agent, env, eval_type, **kwargs):
     prefix = str(run_id) + '__' + agent.name + '__' + env.name
     log = output / (prefix + '__performance.log')
 
+    # Start timer
+    start_time = time.time()
+    elapsed_time = lambda: time.strftime('%H:%M:%S', time.gmtime(time.time() - start_time))
+
     # Iterate through episodes
     for episode in range(n_episodes):
 
@@ -198,7 +201,9 @@ def eval_agent(agent, env, eval_type, **kwargs):
         scores_std = np.std(scores_window)
 
         # Print & log episode performance
-        window_summary = '\rEpisode {}\tAverage Score: {:.2f} ± {:.2f}'.format(episode, scores_mean, scores_std)
+        window_summary = ('\rEpisode {}\tAverage Score: {:.2f} ± {:.2f}'
+            '\tElapsed Time: {}').format(
+            episode, scores_mean, scores_std, elapsed_time())
         print(window_summary, end="")
 
         # Check terminal condition every window_size episodes
@@ -212,22 +217,24 @@ def eval_agent(agent, env, eval_type, **kwargs):
                 best_avg_score_std = scores_std
 
             # Print & log performance of last window_size runs
-            window_summary = '\rEpisode {}\tAverage Score: {:.2f} ± {:.2f}'.format(episode, scores_mean, scores_std)
+            window_summary = ('\rEpisode {}\tAverage Score: {:.2f} ± {:.2f}'
+                '\tElapsed time: {}').format(episode, scores_mean, scores_std, elapsed_time())
             print(window_summary)
             write2path(window_summary, log)
 
             # Terminal condition check (early stop / overfitting)
             if eval_type == 'train' and scores_mean < best_avg_score:
                 window_summary = ('\rEarly stop at {:d}/{:d} episodes!\rAverage Score: {:.2f} ± {:.2f}'
-                    '\tBest Average Score: {:.2f}').format(episode, n_episodes, scores_mean, scores_std, best_avg_score)
+                    '\rBest Average Score: {:.2f}\tElapsed Time: {}').format(
+                        episode, n_episodes, scores_mean, scores_std, best_avg_score, elapsed_time())
                 print(window_summary)
                 write2path(window_summary, log)
                 break
 
             # Terminal condition check (hit goal)
             if eval_type == 'train' and scores_mean - scores_std >= score_goal:
-                window_summary = '\nEnvironment solved in {:d}/{:d} episodes!\tAverage Score: {:.2f}±{:.2f}'.format(
-                    episode, n_episodes, scores_mean, scores_std)
+                window_summary = ('\nEnvironment solved in {:d}/{:d} episodes!\tAverage Score: {:.2f}±{:.2f}'
+                    '\tElapsed time: {}').format(episode, n_episodes, scores_mean, scores_std,  elapsed_time())
                 print(window_summary)
                 write2path(window_summary, log)
                 break
@@ -236,7 +243,6 @@ def eval_agent(agent, env, eval_type, **kwargs):
     if eval_type == 'train': 
         output.mkdir(parents=True, exist_ok=True)
         agent.save(prefix)
-        
     
     # Plot training performance
     plot_performance(scores, output / (prefix + '__training.png'), window_size)
