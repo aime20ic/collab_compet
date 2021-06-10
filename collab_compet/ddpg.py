@@ -1,13 +1,17 @@
-import numpy as np
-import random
+import time
 import copy
-from collections import namedtuple, deque
+import json
+import random
+import numpy as np
 
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-from collab_compet.ddpg_model import Actor, Critic
+from pathlib import Path
+from collections import namedtuple, deque
+
+from collab_compet.model import Actor, Critic
 
 
 BUFFER_SIZE = int(1e6)  # replay buffer size
@@ -21,10 +25,10 @@ WEIGHT_DECAY = 0.0      # L2 weight decay
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-class DDPG(Agent):
+class DDPG():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size, random_seed):
+    def __init__(self, state_size, action_size, random_seed, **kwargs):
         """Initialize an Agent object.
         
         Params
@@ -52,6 +56,15 @@ class DDPG(Agent):
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
+
+        # Log variables
+        self.name = kwargs.get('name', 'ddpg')
+        self.run_id = kwargs.get('run_id', int(time.time()))
+        self.output = kwargs.get('output', 
+            Path('./output/' + str(self.run_id) + '/'))
+
+        # Log parameters
+        self._log_parameters()
     
     def step(self, state, action, reward, next_state, done):
         """Save experience in replay memory, and use random sample from buffer to learn."""
@@ -157,6 +170,37 @@ class DDPG(Agent):
                 'are: [actor, crtic]')
             
         return
+
+    def _log_parameters(self):
+        """
+        Log agent parameters as JSON
+
+        Args:
+            None
+        
+        Returns:
+            None
+        
+        """
+
+        # Create file path
+        path = self.output / (str(self.run_id) + '__' + self.name + '.json')
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Make sure parameters are JSON serializable
+        parameters = vars(self).copy()
+        for key, value in parameters.items():
+            try:
+                json.dumps(value)
+            except TypeError:
+                parameters[key] = str(value)
+        
+        # Save as JSON
+        with open(path, 'w') as file:
+            json.dump(parameters, file, indent=4, sort_keys=True)
+
+        return
+
 
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
