@@ -41,8 +41,8 @@ def parse_args():
 
     # Convert string paths to path objects
     args.output = Path(args.output + '/' + str(args.run_id) + '/')
-    args.actor = Path(args.actor) if args.actor else None
-    args.critic = Path(args.critic) if args.critic else None
+    args.actor = [Path(actor) for actor in args.actor] if args.actor else None
+    args.critic = [Path(critic) for critic in args.critic] if args.critic else None
 
     return args
 
