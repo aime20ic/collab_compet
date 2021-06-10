@@ -223,13 +223,13 @@ def eval_agent(agent, env, eval_type, **kwargs):
             write2path(window_summary, log)
 
             # Terminal condition check (early stop / overfitting)
-            if eval_type == 'train' and scores_mean < best_avg_score:
-                window_summary = ('\rEarly stop at {:d}/{:d} episodes!\rAverage Score: {:.2f} ± {:.2f}'
-                    '\rBest Average Score: {:.2f}\tElapsed Time: {}').format(
-                        episode, n_episodes, scores_mean, scores_std, best_avg_score, elapsed_time())
-                print(window_summary)
-                write2path(window_summary, log)
-                break
+            # if eval_type == 'train' and scores_mean < best_avg_score:
+            #     window_summary = ('\rEarly stop at {:d}/{:d} episodes!\rAverage Score: {:.2f} ± {:.2f}'
+            #         '\rBest Average Score: {:.2f}\tElapsed Time: {}').format(
+            #             episode, n_episodes, scores_mean, scores_std, best_avg_score, elapsed_time())
+            #     print(window_summary)
+            #     write2path(window_summary, log)
+            #     break
 
             # Terminal condition check (hit goal)
             if eval_type == 'train' and scores_mean - scores_std >= score_goal:
