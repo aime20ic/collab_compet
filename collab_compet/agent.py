@@ -28,6 +28,7 @@ class MADDPG():
         self.run_id = kwargs.get('run_id', int(time.time()))
         self.output = kwargs.get('output', 
             Path('./output/' + str(self.run_id) + '/'))
+        self.rng_seed = random_seed
 
         # Create agents
         self.agents = [
@@ -83,4 +84,17 @@ class MADDPG():
         """
         memories = zip(states, actions, rewards, next_states, dones)
         [agent.step(*memory) for memory, agent in zip(memories, self.agents)]
+
+    def save(self, prefix):
+        """
+        Save all agent models
+
+        Args:
+            prefix (str): Prefix for saving DDPG models
+
+        Returns:
+            None
+
+        """
+        [agent.save(prefix + '__' + agent.name) for agent in self.agents]
 

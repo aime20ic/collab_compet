@@ -170,6 +170,21 @@ class DDPG():
                 'are: [actor, crtic]')
             
         return
+    
+    def save(self, prefix):
+        """
+        Save actor & critic models 
+
+        Args:
+            prefix (str): Prefix for saving actor & critic models
+
+        Returns:
+            None
+        
+        """
+        torch.save(self.actor_local.state_dict(), self.output / (prefix + '__actor.pth'))
+        torch.save(self.critic_local.state_dict(), self.output / (prefix + '__critic.pth'))
+        return
 
     def _log_parameters(self):
         """

@@ -162,7 +162,7 @@ def eval_agent(agent, env, eval_type, **kwargs):
     for episode in range(n_episodes):
 
         # Reset environment
-        score = 0
+        score = np.zeros(len(env.agents))
         states = env.reset(train=True if eval_type == 'train' else False)
         
         # Learn for max_t steps
@@ -186,8 +186,8 @@ def eval_agent(agent, env, eval_type, **kwargs):
             if dones:
                 break
         
-        # Get average reward
-        score = np.mean(score)
+        # Get max reward
+        score = np.max(score)
 
         # Save most recent scores
         scores_window.append(score)
@@ -207,8 +207,7 @@ def eval_agent(agent, env, eval_type, **kwargs):
             # Save best performing model (weights)
             if eval_type=='train' and scores_mean >= best_avg_score:
                 output.mkdir(parents=True, exist_ok=True)
-                torch.save(agent.actor_local.state_dict(), output / (prefix + '__best_model__actor.pth'))
-                torch.save(agent.critic_local.state_dict(), output / (prefix + '__best_model__critic.pth'))
+                agent.save(prefix + '__best')
                 best_avg_score = scores_mean
                 best_avg_score_std = scores_std
 
@@ -236,8 +235,8 @@ def eval_agent(agent, env, eval_type, **kwargs):
     # Save final model (weights)
     if eval_type == 'train': 
         output.mkdir(parents=True, exist_ok=True)
-        torch.save(agent.actor_local.state_dict(), output / (prefix + '__model__actor.pth'))
-        torch.save(agent.critic_local.state_dict(), output / (prefix + '__model__critic.pth'))
+        agent.save(prefix)
+        
     
     # Plot training performance
     plot_performance(scores, output / (prefix + '__training.png'), window_size)
@@ -247,7 +246,7 @@ def eval_agent(agent, env, eval_type, **kwargs):
         'n_episodes': n_episodes,
         'eval_type': eval_type, 
         'max_t': max_t,
-        'agent_seed': agent.seed,
+        'agent_seed': agent.rng_seed,
         'env_seed': env.rng_seed,
         'best_avg_score': best_avg_score,
         'best_avg_score_std': best_avg_score_std,
