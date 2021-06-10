@@ -1,5 +1,6 @@
 import time
 import json
+import numpy as np
 from pathlib import Path
 
 from collab_compet.ddpg import DDPG
@@ -51,4 +52,35 @@ class MADDPG():
         """
         [agent.load(path, ac) for agent, path in zip(self.agents, paths)]
 
+    def act(self, observations):
+        """
+        Get actions for all agents
+        
+        Args:
+            observations (array): Observation for each agent
+
+        Returns:
+            actions (array of arrays): Continuous actions for each agent
+        
+        """
+        actions = [agent.act(obs) for agent, obs in zip(self.agents, observations)]
+        return np.array(actions)
+
+    def step(self, states, actions, rewards, next_states, dones):
+        """
+        Add memory to experience replay buffer & learn for each agent
+        
+        Args:
+            states (array): Observations for each agent for current time step
+            actions (array): Continuous actions for each agents
+            rewards (array): Rewards for each agents
+            next_states (array): Observations for each agent for next time step
+            dones (array): Environment complete for each agent
+
+        Returns:
+            None
+        
+        """
+        memories = zip(states, actions, rewards, next_states, dones)
+        [agent.step(*memory) for memory, agent in zip(memories, self.agents)]
 

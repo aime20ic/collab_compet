@@ -169,7 +169,7 @@ def eval_agent(agent, env, eval_type, **kwargs):
         for t in range(max_t):
 
             # Get actions for all agents
-            actions = np.array(agent.act(states))
+            actions = agent.act(states)
 
             # Send actions for all agents
             _, _, rewards, next_states, dones = env.step(actions)
