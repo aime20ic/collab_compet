@@ -54,7 +54,7 @@ class DDPG():
         self.noise = OUNoise(action_size, random_seed, sigma=0.1)
 
         # Replay memory
-        self.memory = ReplayBuffer(action_size, self.buffer_size, self.batch_size, random_seed)
+        self.memory = ReplayBuffer(action_size, self.buffer_size, self.batch_size, random_seed, self.device)
 
         # Log variables
         self.name = kwargs.get('name', 'ddpg')
@@ -242,7 +242,7 @@ class OUNoise:
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
 
-    def __init__(self, action_size, buffer_size, batch_size, seed):
+    def __init__(self, action_size, buffer_size, batch_size, seed, device):
         """Initialize a ReplayBuffer object.
         Params
         ======
@@ -254,6 +254,7 @@ class ReplayBuffer:
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.seed = random.seed(seed)
+        self.device = device
     
     def add(self, state, action, reward, next_state, done):
         """Add a new experience to memory."""

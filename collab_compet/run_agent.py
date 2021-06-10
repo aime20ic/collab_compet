@@ -186,7 +186,7 @@ def eval_agent(agent, env, eval_type, **kwargs):
             score += rewards
 
             # Check terminal condition
-            if dones:
+            if any(dones):
                 break
         
         # Get max reward
