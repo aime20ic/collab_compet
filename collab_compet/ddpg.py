@@ -36,8 +36,8 @@ class DDPG():
         self.batch_size = 256        # minibatch size
         self.gamma = 0.99            # discount factor
         self.tau = 1e-3              # for soft update of target parameters
-        self.lr_actor = 5e-4         # learning rate of the actor 
-        self.lr_critic = 5e-4        # learning rate of the critic
+        self.lr_actor = 1e-4         # learning rate of the actor 
+        self.lr_critic = 3e-4        # learning rate of the critic
         self.weight_decay = 0.0      # L2 weight decay
 
         # Actor Network (w/ Target Network)
@@ -115,6 +115,7 @@ class DDPG():
         # Minimize the loss
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
+        torch.nn.utils.clip_grad_norm(self.critic_local.parameters(), 1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
